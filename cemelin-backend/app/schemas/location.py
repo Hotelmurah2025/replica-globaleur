@@ -1,10 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 
 class Coordinates(BaseModel):
     lat: float
     lng: float
+
+class MapBounds(BaseModel):
+    center: Coordinates
+    radius: float = Field(..., description="Search radius in meters")
+
+class MapMarker(BaseModel):
+    lat: float
+    lng: float
+    title: str
+    place_id: str
+    rating: Optional[float] = None
+    icon: Optional[str] = None
 
 class LocationBase(BaseModel):
     place_id: str

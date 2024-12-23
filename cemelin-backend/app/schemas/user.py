@@ -1,5 +1,6 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, constr
 from typing import Optional
+from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -7,7 +8,7 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
 
 class UserCreate(UserBase):
-    password: str
+    password: constr(min_length=8)  # Minimum 8 characters for password
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -17,6 +18,9 @@ class User(UserBase):
     id: int
     is_active: bool
     is_superuser: bool
+    email_verified_at: Optional[datetime] = None
+    last_login: Optional[datetime] = None
+    password_changed_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -27,3 +31,16 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: Optional[int] = None
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+    token: str
+    new_password: constr(min_length=8)
+
+class EmailVerify(BaseModel):
+    email: EmailStr
+    token: str
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: constr(min_length=8)

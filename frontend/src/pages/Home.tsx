@@ -1,38 +1,80 @@
-import { Search } from "lucide-react"
-import { Input } from "../components/ui/input"
-import { Button } from "../components/ui/button"
+import { useState } from 'react';
+import { useLoadScript } from '@react-google-maps/api';
+import { SearchBox } from '@/components/search/SearchBox';
+import { MapView } from '@/components/maps/MapView';
+import { useTranslation } from 'react-i18next';
+
+const libraries: ("places")[] = ["places"];
 
 const Home = () => {
+  const { t } = useTranslation();
+  const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({
+    lat: -6.200000,  // Jakarta's latitude
+    lng: 106.816666  // Jakarta's longitude
+  });
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    libraries,
+  });
+
+  const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
+    if (place.geometry?.location) {
+      setSelectedPlace(place);
+      setMapCenter({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      });
+    }
+  };
+
+  if (!isLoaded) return <div>Loading...</div>;
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[600px] bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center">
+      <div className="relative h-96 bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center">
         <div className="container text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Discover Your Next Adventure
+            {t('hero.title')}
           </h1>
           <p className="text-xl mb-8">
-            Find and plan your perfect trip with Cemelin
+            {t('hero.subtitle')}
           </p>
           
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto flex gap-2">
-            <div className="flex-1 relative">
-              <Input
-                type="text"
-                placeholder="Search destinations..."
-                className="w-full h-12 pl-12 bg-white text-gray-900"
-              />
-              <Search className="absolute left-4 top-3 h-6 w-6 text-gray-400" />
-            </div>
-            <Button className="h-12 px-8 bg-blue-700 hover:bg-blue-800">
-              Search
-            </Button>
-          </div>
+          <SearchBox onPlaceSelect={handlePlaceSelect} />
         </div>
       </div>
-    </div>
-  )
-}
 
-export default Home
+      {/* Map Section */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-12">
+          <MapView 
+            center={mapCenter}
+            markers={selectedPlace?.geometry?.location ? [mapCenter] : []}
+          />
+        </div>
+
+        {/* Popular Destinations */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="p-6 bg-white rounded-lg shadow-md transition-transform hover:scale-105">
+            <h3 className="text-xl font-semibold mb-2">{t('home.popularDestinations')}</h3>
+            <p className="text-gray-600">{t('home.exploreLocations')}</p>
+          </div>
+          <div className="p-6 bg-white rounded-lg shadow-md transition-transform hover:scale-105">
+            <h3 className="text-xl font-semibold mb-2">{t('home.planTrip')}</h3>
+            <p className="text-gray-600">{t('home.createItinerary')}</p>
+          </div>
+          <div className="p-6 bg-white rounded-lg shadow-md transition-transform hover:scale-105">
+            <h3 className="text-xl font-semibold mb-2">{t('home.reviews')}</h3>
+            <p className="text-gray-600">{t('home.readExperiences')}</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+export default Home;

@@ -21,35 +21,60 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
   const [isSignIn, setIsSignIn] = useState(mode === "signin")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
+  const [username, setUsername] = useState("")
+  const [fullName, setFullName] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       const endpoint = `${import.meta.env.VITE_API_URL}/auth/${isSignIn ? 'login' : 'register'}`
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          ...(isSignIn ? {} : { name }),
-        }),
-      })
+      
+      const response = await (async () => {
+        if (isSignIn) {
+          // Login: Use form-data format for OAuth2
+          const formData = new FormData()
+          formData.append('username', email) // OAuth2 expects 'username' field
+          formData.append('password', password)
+          
+          return await fetch(endpoint, {
+            method: 'POST',
+            body: formData,
+          })
+        } else {
+          // Register: Use JSON format
+          return await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              username,
+              full_name: fullName,
+            }),
+          })
+        }
+      })()
 
       const data = await response.json()
       if (!response.ok) {
         throw new Error(data.detail || 'Authentication failed')
       }
 
-      localStorage.setItem('token', data.access_token)
+      if (isSignIn) {
+        localStorage.setItem('token', data.access_token)
+      }
+      
       toast({
         title: isSignIn ? "Welcome back!" : "Account created",
-        description: isSignIn ? "Successfully signed in" : "Your account has been created",
+        description: isSignIn ? "Successfully signed in" : "Please check your email to verify your account",
       })
-      window.location.reload()
+      
+      if (isSignIn) {
+        window.location.reload()
+      }
+
     } catch (error) {
       console.error('Authentication error:', error)
       toast({
@@ -80,16 +105,28 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isSignIn && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
+            </>
           )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

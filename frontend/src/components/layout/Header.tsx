@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Menu, Globe, User } from "lucide-react"
 import { Button } from "../ui/button"
+import { AuthDialog } from "../auth/AuthDialog"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import {
@@ -29,16 +30,16 @@ const Header = () => {
         
         <nav className="hidden md:flex space-x-6">
           <Link to="/" className="text-gray-600 hover:text-blue-600 transition-colors">
-            {t('home')}
+            {t('nav.home', 'Home')}
           </Link>
           <Link to="/destinations" className="text-gray-600 hover:text-blue-600 transition-colors">
-            {t('destinations')}
+            {t('nav.destinations', 'Destinations')}
           </Link>
           <Link to="/plans" className="text-gray-600 hover:text-blue-600 transition-colors">
-            {t('plans')}
+            {t('nav.plans', 'Plans')}
           </Link>
           <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
-            {t('contactUs')}
+            {t('nav.contactUs')}
           </Link>
         </nav>
 
@@ -62,11 +63,15 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant="ghost" className="flex items-center space-x-2">
-            <User className="h-5 w-5" />
-            <span>{t('signIn')}</span>
-          </Button>
-          <Button>{t('signUp')}</Button>
+          <AuthDialog mode="signin" trigger={
+            <Button variant="ghost" className="flex items-center space-x-2">
+              <User className="h-5 w-5" />
+              <span>{t('nav.signIn')}</span>
+            </Button>
+          } />
+          <AuthDialog mode="signup" trigger={
+            <Button>{t('nav.signUp')}</Button>
+          } />
         </div>
 
         <Button
@@ -83,23 +88,27 @@ const Header = () => {
         <div className="md:hidden border-t">
           <nav className="container py-4 space-y-2">
             <Link to="/" className="block px-4 py-2 text-gray-600 hover:bg-blue-50 rounded-lg">
-              {t('home')}
+              {t('nav.home')}
             </Link>
             <Link to="/destinations" className="block px-4 py-2 text-gray-600 hover:bg-blue-50 rounded-lg">
-              {t('destinations')}
+              {t('nav.destinations')}
             </Link>
             <Link to="/plans" className="block px-4 py-2 text-gray-600 hover:bg-blue-50 rounded-lg">
-              {t('plans')}
+              {t('nav.plans')}
             </Link>
             <Link to="/contact" className="block px-4 py-2 text-gray-600 hover:bg-blue-50 rounded-lg">
-              {t('contactUs')}
+              {t('nav.contactUs')}
             </Link>
             <div className="px-4 py-2 space-y-2">
-              <Button variant="ghost" className="w-full justify-start">
-                <User className="h-5 w-5 mr-2" />
-                {t('signIn')}
-              </Button>
-              <Button className="w-full">{t('signUp')}</Button>
+              <AuthDialog mode="signin" trigger={
+                <Button variant="ghost" className="w-full justify-start">
+                  <User className="h-5 w-5 mr-2" />
+                  {t('nav.signIn')}
+                </Button>
+              } />
+              <AuthDialog mode="signup" trigger={
+                <Button className="w-full">{t('nav.signUp')}</Button>
+              } />
             </div>
           </nav>
         </div>

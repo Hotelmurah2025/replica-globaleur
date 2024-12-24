@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Calendar, Clock, MapPin, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -25,7 +25,7 @@ export function TripPlanner({ initialItems = [], onSave }: TripPlannerProps) {
   const [items, setItems] = useState<TripItem[]>(initialItems);
   const [days, setDays] = useState(Math.max(1, ...initialItems.map(item => item.day)));
 
-  const onDragEnd = (result: { source: { droppableId: string; index: number }; destination?: { droppableId: string; index: number }; draggableId: string }) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const sourceDay = parseInt(result.source.droppableId);

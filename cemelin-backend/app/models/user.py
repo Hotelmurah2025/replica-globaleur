@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Boolean, DateTime
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from app.models.base import BaseModel
 
 class User(BaseModel):
@@ -23,3 +24,6 @@ class User(BaseModel):
     # Timestamps
     last_login = Column(DateTime, nullable=True)
     password_changed_at = Column(DateTime, nullable=True)
+    
+    # Relationships
+    trips = relationship("Trip", back_populates="user")

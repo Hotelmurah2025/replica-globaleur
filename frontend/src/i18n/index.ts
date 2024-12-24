@@ -152,9 +152,13 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
+    lng: 'en',
     interpolation: {
       escapeValue: false,
     },
+    returnObjects: false,
+    returnEmptyString: false,
+    returnNull: false,
   });
 
 export default i18n;

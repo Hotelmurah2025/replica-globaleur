@@ -1,5 +1,5 @@
 import * as React from "react"
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd"
 import { Card } from "../components/ui/card"
 import { Helmet } from "react-helmet-async"
 import { useToast } from "../components/ui/use-toast"
@@ -36,7 +36,7 @@ export default function Plans() {
   ])
   const [availableActivities] = React.useState<Activity[]>(mockActivities)
 
-  const onDragEnd = (result: { source: { droppableId: string; index: number }; destination?: { droppableId: string; index: number }; draggableId: string }) => {
+  const onDragEnd = (result: DropResult) => {
     const { source, destination } = result
 
     if (!destination) return

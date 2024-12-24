@@ -30,7 +30,6 @@ export function TripPlanner({ initialItems = [], onSave }: TripPlannerProps) {
 
     const sourceDay = parseInt(result.source.droppableId);
     const destinationDay = parseInt(result.destination.droppableId);
-    const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
 
     const newItems = [...items];

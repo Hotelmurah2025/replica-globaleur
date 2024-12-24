@@ -34,7 +34,7 @@ export default function Plans() {
     { id: "day-2", date: "Day 2", activities: [] },
     { id: "day-3", date: "Day 3", activities: [] },
   ])
-  const [availableActivities, setAvailableActivities] = React.useState<Activity[]>(mockActivities)
+  const [availableActivities] = React.useState<Activity[]>(mockActivities)
 
   const onDragEnd = (result: any) => {
     const { source, destination } = result

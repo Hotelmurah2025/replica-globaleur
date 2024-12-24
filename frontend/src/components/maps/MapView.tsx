@@ -33,6 +33,7 @@ interface MapMarker {
 interface MapViewProps {
   center?: { lat: number; lng: number };
   initialLocations?: Location[];
+  markers?: { lat: number; lng: number }[];
 }
 
 export function MapView({ center = defaultCenter, initialLocations = [] }: MapViewProps) {

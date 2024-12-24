@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ interface SearchBoxProps {
 
 export function SearchBox({ onPlaceSelect }: SearchBoxProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Location[]>([]);
@@ -103,6 +105,17 @@ export function SearchBox({ onPlaceSelect }: SearchBoxProps) {
         <Button 
           className="h-12 px-8 bg-blue-700 hover:bg-blue-800 text-white"
           disabled={isLoading}
+          onClick={() => {
+            if (!searchInput.trim()) {
+              toast({
+                title: t('search.error'),
+                description: t('search.emptySearch'),
+                variant: "destructive",
+              });
+              return;
+            }
+            navigate(`/destinations?search=${encodeURIComponent(searchInput.trim())}`);
+          }}
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />

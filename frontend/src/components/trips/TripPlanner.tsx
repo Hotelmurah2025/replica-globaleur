@@ -25,7 +25,7 @@ export function TripPlanner({ initialItems = [], onSave }: TripPlannerProps) {
   const [items, setItems] = useState<TripItem[]>(initialItems);
   const [days, setDays] = useState(Math.max(1, ...initialItems.map(item => item.day)));
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: { source: { droppableId: string; index: number }; destination?: { droppableId: string; index: number }; draggableId: string }) => {
     if (!result.destination) return;
 
     const sourceDay = parseInt(result.source.droppableId);

@@ -66,7 +66,7 @@ export function MapView({ center = defaultCenter, initialLocations = [] }: MapVi
 
       const data = await response.json();
       setMarkers(prevMarkers => {
-        const newMarkers = data.map((m: any) => ({
+        const newMarkers = data.map((m: { place_id: string; name: string; location: { lat: number; lng: number } }) => ({
           place_id: m.place_id,
           title: m.name,
           lat: m.location.lat,

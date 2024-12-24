@@ -35,7 +35,7 @@ export default function Contact() {
       } else {
         throw new Error("Failed to send message")
       }
-    } catch (error) {
+    } catch {
       toast({
         title: t('contact.error'),
         description: t('contact.errorMessage'),

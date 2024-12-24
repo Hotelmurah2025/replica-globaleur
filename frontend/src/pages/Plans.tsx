@@ -36,7 +36,7 @@ export default function Plans() {
   ])
   const [availableActivities] = React.useState<Activity[]>(mockActivities)
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: { source: { droppableId: string; index: number }; destination?: { droppableId: string; index: number }; draggableId: string }) => {
     const { source, destination } = result
 
     if (!destination) return

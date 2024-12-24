@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, destinations, reviews, trips, contact
+from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 from app.config import settings
 from app.database import Base, engine
 
@@ -27,6 +27,9 @@ app.include_router(destinations.router, prefix=f"{settings.API_V1_STR}/destinati
 app.include_router(reviews.router, prefix=f"{settings.API_V1_STR}/reviews", tags=["reviews"])
 app.include_router(trips.router, prefix=f"{settings.API_V1_STR}/trips", tags=["trips"])
 app.include_router(contact.router, prefix=f"{settings.API_V1_STR}/contact", tags=["contact"])
+app.include_router(i18n.router, prefix=f"{settings.API_V1_STR}/i18n", tags=["i18n"])
+app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", tags=["locations"])
+app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["maps"])
 
 @app.get("/healthz")
 async def healthz():

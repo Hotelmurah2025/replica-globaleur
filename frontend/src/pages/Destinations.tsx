@@ -1,10 +1,12 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useLoadScript } from "@react-google-maps/api"
+import { useSearchParams } from "react-router-dom"
 import { MapView } from "../components/maps/MapView"
 import { SearchBox } from "../components/search/SearchBox"
 import { Button } from "../components/ui/button"
 import { Helmet } from "react-helmet-async"
 import { useTranslation } from "react-i18next"
+import { toast } from "../components/ui/use-toast"
 
 const libraries: ("places")[] = ["places"]
 
@@ -59,11 +61,44 @@ const mockDestinations: Destination[] = [
 
 export default function Destinations() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null)
   const [mapCenter, setMapCenter] = useState({
     lat: -6.200000,
     lng: 106.816666,
   })
+  const [filteredDestinations, setFilteredDestinations] = useState<Destination[]>(mockDestinations)
+  const [isSearching, setIsSearching] = useState(false)
+
+  // Handle search query from URL
+  useEffect(() => {
+    const searchQuery = searchParams.get('search')?.toLowerCase();
+    if (searchQuery) {
+      setIsSearching(true);
+      // Simulate API call delay
+      setTimeout(() => {
+        const filtered = mockDestinations.filter(dest => 
+          dest.name.toLowerCase().includes(searchQuery) || 
+          dest.description.toLowerCase().includes(searchQuery)
+        );
+        setFilteredDestinations(filtered);
+        
+        // If we have matches, center the map on the first result
+        if (filtered.length > 0) {
+          setMapCenter(filtered[0].location);
+        } else {
+          toast({
+            title: t('search.noResults'),
+            description: t('search.tryDifferentSearch'),
+            variant: "default",
+          });
+        }
+        setIsSearching(false);
+      }, 500); // Add slight delay to show loading state
+    } else {
+      setFilteredDestinations(mockDestinations);
+    }
+  }, [searchParams, t]);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
@@ -100,7 +135,17 @@ export default function Destinations() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Destinations List */}
           <div className="lg:col-span-1 space-y-6">
-            {mockDestinations.map((destination) => (
+            {isSearching ? (
+              <div className="flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+              </div>
+            ) : filteredDestinations.length === 0 ? (
+              <div className="text-center p-8 bg-white rounded-lg shadow-md">
+                <p className="text-gray-600">{t('search.noDestinationsFound')}</p>
+                <p className="text-sm text-gray-500 mt-2">{t('search.tryAdjustingSearch')}</p>
+              </div>
+            ) : (
+              filteredDestinations.map((destination) => (
               <div
                 key={destination.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
@@ -124,7 +169,7 @@ export default function Destinations() {
                   </Button>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
 
           {/* Map and Details View */}
@@ -132,7 +177,7 @@ export default function Destinations() {
             <div className="sticky top-24 space-y-6">
               <MapView
                 center={mapCenter}
-                markers={selectedDestination ? [selectedDestination.location] : mockDestinations.map(d => d.location)}
+                markers={selectedDestination ? [selectedDestination.location] : filteredDestinations.map(d => d.location)}
               />
               
               {selectedDestination && (

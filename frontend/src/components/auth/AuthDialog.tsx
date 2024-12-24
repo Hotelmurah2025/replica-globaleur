@@ -10,6 +10,7 @@ import {
 } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
+import { toast } from "../ui/use-toast"
 
 interface AuthDialogProps {
   mode?: "signin" | "signup"
@@ -22,10 +23,41 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement authentication logic
-    console.log({ email, password, name })
+    try {
+      const endpoint = `${import.meta.env.VITE_API_URL}/auth/${isSignIn ? 'login' : 'register'}`
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          ...(isSignIn ? {} : { name }),
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || 'Authentication failed')
+      }
+
+      localStorage.setItem('token', data.access_token)
+      toast({
+        title: isSignIn ? "Welcome back!" : "Account created",
+        description: isSignIn ? "Successfully signed in" : "Your account has been created",
+      })
+      window.location.reload()
+    } catch (error) {
+      console.error('Authentication error:', error)
+      toast({
+        title: "Authentication failed",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive",
+      })
+    }
   }
 
   return (

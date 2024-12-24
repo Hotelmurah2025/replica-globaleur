@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 import { Loader2 } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 const containerStyle = {
   width: '100%',
@@ -12,20 +13,85 @@ const defaultCenter = {
   lng: 106.816666  // Jakarta's longitude
 };
 
-interface MapViewProps {
-  center?: google.maps.LatLngLiteral;
-  markers?: google.maps.LatLngLiteral[];
+interface Location {
+  place_id: string;
+  name: string;
+  description: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
 }
 
-export function MapView({ center = defaultCenter, markers = [] }: MapViewProps) {
+interface MapMarker {
+  place_id: string;
+  title: string;
+  lat: number;
+  lng: number;
+}
+
+interface MapViewProps {
+  center?: { lat: number; lng: number };
+  initialLocations?: Location[];
+  markers?: { lat: number; lng: number }[];
+}
+
+export function MapView({ center = defaultCenter, initialLocations = [] }: MapViewProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [markers, setMarkers] = useState<MapMarker[]>(
+    initialLocations.map(loc => ({
+      place_id: loc.place_id,
+      title: loc.name,
+      lat: loc.location.lat,
+      lng: loc.location.lng
+    }))
+  );
+
+  const fetchNearbyMarkers = useCallback(async (mapCenter: { lat: number; lng: number }) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/maps/markers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          center: mapCenter,
+          radius: 5000, // 5km radius
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch markers');
+      }
+
+      const data = await response.json();
+      setMarkers(prevMarkers => {
+        const newMarkers = data.map((m: { place_id: string; name: string; location: { lat: number; lng: number } }) => ({
+          place_id: m.place_id,
+          title: m.name,
+          lat: m.location.lat,
+          lng: m.location.lng,
+        }));
+        return [...prevMarkers, ...newMarkers];
+      });
+    } catch (error) {
+      console.error('Error fetching markers:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load nearby locations',
+        variant: 'destructive',
+      });
+    }
+  }, []);
 
   const onLoad = useCallback(() => {
     setIsLoading(false);
-  }, []);
+    fetchNearbyMarkers(center);
+  }, [center, fetchNearbyMarkers]);
 
   const onUnmount = useCallback(() => {
     setIsLoading(true);
+    setMarkers([]);
   }, []);
 
   return (
@@ -49,8 +115,12 @@ export function MapView({ center = defaultCenter, markers = [] }: MapViewProps) 
           fullscreenControl: false,
         }}
       >
-        {markers.map((position, idx) => (
-          <Marker key={idx} position={position} />
+        {markers.map((marker) => (
+          <Marker
+            key={marker.place_id}
+            position={{ lat: marker.lat, lng: marker.lng }}
+            title={marker.title}
+          />
         ))}
       </GoogleMap>
       </LoadScript>

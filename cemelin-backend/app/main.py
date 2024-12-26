@@ -1,11 +1,10 @@
+import logging
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import init_db, Base, engine
 from app.deps import get_settings  # Import deps before api modules
-from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
-import logging
-import sys
 
 # Configure logging
 logging.basicConfig(
@@ -14,6 +13,13 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger(__name__)
+
+# Initialize database before creating FastAPI app
+logger.info("Initializing database before application startup...")
+init_db()
+
+# Import routers after database initialization
+from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -38,11 +44,6 @@ app.include_router(contact.router, prefix=f"{settings.API_V1_STR}/contact", tags
 app.include_router(i18n.router, prefix=f"{settings.API_V1_STR}/i18n", tags=["i18n"])
 app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", tags=["locations"])
 app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["maps"])
-
-# Initialize database before creating FastAPI app
-from app.database import init_db, Base, engine
-logger.info("Initializing database before application startup...")
-init_db()
 
 @app.on_event("startup")
 async def startup_event():

@@ -19,10 +19,11 @@ def init_db():
     """Initialize database and create all tables."""
     try:
         logger.info("Starting database initialization process...")
+        logger.info(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
         
-        # Import models to ensure proper registration
-        from .models import all_models
+        # Import Base and models
         from .models.base import Base
+        from .models import all_models  # This imports all required models
         
         # Create all tables
         Base.metadata.create_all(bind=engine)

@@ -16,6 +16,10 @@ logging.basicConfig(
     ]
 )
 
+# Set all loggers to INFO level
+for logger_name in logging.root.manager.loggerDict:
+    logging.getLogger(logger_name).setLevel(logging.INFO)
+
 # Configure app logger
 logger = logging.getLogger(__name__)
 

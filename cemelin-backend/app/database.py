@@ -20,16 +20,18 @@ def init_db():
     try:
         logger.info("Starting database initialization process...")
         
-        # Import Base and models to ensure proper registration
+        # Import models to ensure proper registration
+        from .models import all_models
         from .models.base import Base
-        from .models import user, destination, review, trip
         
         # Create all tables
         Base.metadata.create_all(bind=engine)
+        logger.info("Tables created successfully")
         
         # Verify tables exist
         inspector = inspect(engine)
         tables = inspector.get_table_names()
+        logger.info(f"Found tables: {tables}")
         
         # Check required tables
         required_tables = ['users', 'destinations', 'reviews', 'trips']

@@ -8,11 +8,26 @@ from app.deps import get_settings  # Import deps before api modules
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Set to DEBUG level
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
+    force=True,  # Force reconfiguration
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.StreamHandler(sys.stderr)
+    ]
 )
+
+# Configure root logger
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+
+# Configure app logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Configure SQLAlchemy logging
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
 
 # Initialize database before creating FastAPI app
 logger.info("Initializing database before application startup...")

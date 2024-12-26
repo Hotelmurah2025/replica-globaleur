@@ -22,6 +22,7 @@ def init_db():
         logger.debug(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
         
         # Import models first to ensure they're registered with Base
+        logger.debug("Importing models...")
         from .models import all_models
         logger.debug("Models imported successfully...")
         logger.debug(f"Available models: {[m.__name__ for m in all_models]}")

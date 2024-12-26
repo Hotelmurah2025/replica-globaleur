@@ -24,15 +24,26 @@ def init_db():
         logger.info("Starting database initialization...")
         logger.info(f"Using database URL: {SQLALCHEMY_DATABASE_URL}")
         
+        # Drop all tables first to ensure clean state (since we're using in-memory DB)
+        logger.info("Dropping existing tables...")
+        Base.metadata.drop_all(bind=engine)
+        
+        # Import all models to ensure they're registered
+        from app.models import user, destination, review, trip
+        
         # Create all tables
+        logger.info("Creating tables...")
         Base.metadata.create_all(bind=engine)
-        logger.info("Database tables created successfully")
         
         # Verify tables exist
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         logger.info(f"Created tables: {tables}")
         
+        if not tables:
+            raise Exception("No tables were created during initialization")
+            
+        logger.info("Database tables created successfully")
         return True
     except Exception as e:
         logger.error(f"Error creating database tables: {e}")

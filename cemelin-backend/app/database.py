@@ -22,14 +22,10 @@ def init_db():
         logger.debug(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
         logger.debug(f"SQLAlchemy Base classes: {Base._decl_class_registry.keys()}")
         
-        # Import models directly from their modules to avoid circular imports
-        from .models.user import User
-        from .models.destination import Destination
-        from .models.review import Review
-        from .models.trip import Trip
+        # Get models from models.__init__.py
+        from .models import all_models
         logger.debug("Models imported successfully...")
-        models = [User, Destination, Review, Trip]
-        logger.debug(f"Available models: {[m.__name__ for m in models]}")
+        logger.debug(f"Available models: {[m.__name__ for m in all_models]}")
         
         # Drop all tables first to ensure clean state (since we're using in-memory DB)
         logger.debug("Dropping existing tables...")

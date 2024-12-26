@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str
     DATABASE_URL: str
     
-    # Google Places API configuration
-    GOOGLE_PLACES_API_KEY: str
+    # Google Maps API configuration
+    GOOGLE_MAPS_API_KEY: str
     
     # Rate limiting settings
     rate_limit_requests: int = 100  # Number of requests

@@ -2,16 +2,36 @@ from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from functools import lru_cache
+from typing import Annotated, TYPE_CHECKING, Generator
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+
+from app.config import settings
+from app.database import SessionLocal
+from app.models.user import User
+from app.schemas.user import TokenPayload
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from app.database import SessionLocal
-from app.config import settings
-from app.models.user import User
-from app.schemas.user import TokenPayload
+
+if TYPE_CHECKING:
+    from app.config import Settings
+
+@lru_cache()
+def get_settings() -> "Settings":
+    """
+    Returns application settings singleton.
+    Uses lru_cache to ensure settings are only loaded once.
+    """
+    return settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
-def get_db() -> Generator:
+def get_db():
     db = SessionLocal()
     try:
         yield db

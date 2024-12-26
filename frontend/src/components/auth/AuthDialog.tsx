@@ -31,14 +31,19 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
       
       const response = await (async () => {
         if (isSignIn) {
-          // Login: Use form-data format for OAuth2
-          const formData = new FormData()
-          formData.append('username', email) // OAuth2 expects 'username' field
-          formData.append('password', password)
+          // Login: Use URL-encoded format for OAuth2
+          const formBody = new URLSearchParams()
+          formBody.append('username', email) // OAuth2 expects 'username' field
+          formBody.append('password', password)
           
           return await fetch(endpoint, {
             method: 'POST',
-            body: formData,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accept': 'application/json',
+            },
+            credentials: 'include',
+            body: formBody,
           })
         } else {
           // Register: Use JSON format
@@ -46,7 +51,9 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Accept': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({
               email,
               password,

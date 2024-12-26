@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from sqlalchemy.orm import Session
-from typing import Optional
-from pydantic import BaseModel, EmailStr, constr
+from typing import Optional, Annotated
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from app.deps import get_db
 from app.config import settings
@@ -10,11 +10,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ContactMessage(BaseModel):
-    name: constr(min_length=2, max_length=100)
+    name: Annotated[str, Field(min_length=2, max_length=100)]
     email: EmailStr
-    subject: constr(min_length=3, max_length=200)
-    message: constr(min_length=10, max_length=2000)
-    phone: Optional[constr(regex=r'^\+?[1-9]\d{1,14}$')] = None
+    subject: Annotated[str, Field(min_length=3, max_length=200)]
+    message: Annotated[str, Field(min_length=10, max_length=2000)]
+    phone: Optional[Annotated[str, Field(pattern=r'^\+?[1-9]\d{1,14}$')]] = None
     locale: str = "en"  # Default to English
 
 class ContactResponse(BaseModel):

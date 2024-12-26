@@ -12,10 +12,10 @@ async def get_location_markers(bounds: MapBounds):
     Get location markers within the specified map bounds.
     This endpoint is used for displaying pins on the map interface.
     """
-    if not settings.google_places_api_key:
+    if not settings.google_maps_api_key:
         raise HTTPException(
             status_code=500,
-            detail="Google Places API key not configured"
+            detail="Google Maps API key not configured"
         )
     
     try:
@@ -23,7 +23,7 @@ async def get_location_markers(bounds: MapBounds):
             # Use the Places API to search for places within the bounds
             url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
             params = {
-                "key": settings.google_places_api_key,
+                "key": settings.google_maps_api_key,
                 "location": f"{bounds.center.lat},{bounds.center.lng}",
                 "radius": bounds.radius,  # in meters
                 "type": "tourist_attraction"
@@ -65,10 +65,10 @@ async def get_static_map_url(place_id: str, width: int = 600, height: int = 400,
     Generate a static map URL for a specific location.
     This is useful for generating map previews in the UI.
     """
-    if not settings.google_places_api_key:
+    if not settings.google_maps_api_key:
         raise HTTPException(
             status_code=500,
-            detail="Google Places API key not configured"
+            detail="Google Maps API key not configured"
         )
     
     try:
@@ -76,7 +76,7 @@ async def get_static_map_url(place_id: str, width: int = 600, height: int = 400,
             # First, get the place details to get coordinates
             details_url = "https://maps.googleapis.com/maps/api/place/details/json"
             params = {
-                "key": settings.google_places_api_key,
+                "key": settings.google_maps_api_key,
                 "place_id": place_id,
                 "fields": "geometry"
             }
@@ -104,7 +104,7 @@ async def get_static_map_url(place_id: str, width: int = 600, height: int = 400,
                 f"center={location.get('lat')},{location.get('lng')}&"
                 f"zoom={zoom}&size={width}x{height}&"
                 f"markers=color:red%7C{location.get('lat')},{location.get('lng')}&"
-                f"key={settings.google_places_api_key}"
+                f"key={settings.google_maps_api_key}"
             )
             
             return static_map_url

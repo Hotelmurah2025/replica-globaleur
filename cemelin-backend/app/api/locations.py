@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 import httpx
-from app.deps import get_db, get_settings
+from app.deps import get_db
+from app.deps import get_settings
 from app.schemas.location import LocationSearch, LocationSearchResult, LocationDetails, Coordinates
 from datetime import datetime
 import logging
@@ -22,10 +23,10 @@ async def search_locations(
     Search for locations using Google Places API with autocomplete support.
     """
     try:
-        if not settings.google_places_api_key:
+        if not settings.GOOGLE_MAPS_API_KEY:
             raise HTTPException(
                 status_code=500,
-                detail="Google Places API key not configured"
+                detail="Google Maps API key not configured"
             )
 
         async with httpx.AsyncClient() as client:
@@ -33,7 +34,7 @@ async def search_locations(
                 "https://maps.googleapis.com/maps/api/place/autocomplete/json",
                 params={
                     "input": query,
-                    "key": settings.google_places_api_key,
+                    "key": settings.GOOGLE_MAPS_API_KEY,
                     "language": language,
                     "types": "(cities)"  # Focus on cities for travel destinations
                 }
@@ -56,7 +57,7 @@ async def search_locations(
                     "https://maps.googleapis.com/maps/api/place/details/json",
                     params={
                         "place_id": place_id,
-                        "key": settings.google_places_api_key,
+                        "key": settings.GOOGLE_MAPS_API_KEY,
                         "language": language,
                         "fields": "name,formatted_address,geometry,type,photos,rating,user_ratings_total"
                     }
@@ -107,10 +108,10 @@ async def get_location_details(
     Get detailed information about a specific location.
     """
     try:
-        if not settings.google_places_api_key:
+        if not settings.GOOGLE_MAPS_API_KEY:
             raise HTTPException(
                 status_code=500,
-                detail="Google Places API key not configured"
+                detail="Google Maps API key not configured"
             )
 
         async with httpx.AsyncClient() as client:
@@ -118,7 +119,7 @@ async def get_location_details(
                 "https://maps.googleapis.com/maps/api/place/details/json",
                 params={
                     "place_id": place_id,
-                    "key": settings.google_places_api_key,
+                    "key": settings.GOOGLE_MAPS_API_KEY,
                     "language": language,
                     "fields": "name,formatted_address,geometry,type,photos,rating,user_ratings_total,website,formatted_phone_number,opening_hours,price_level"
                 }
@@ -142,7 +143,7 @@ async def get_location_details(
                         params={
                             "maxwidth": 800,
                             "photo_reference": photo["photo_reference"],
-                            "key": settings.google_places_api_key
+                            "key": settings.GOOGLE_MAPS_API_KEY
                         }
                     )
                     if photo_response.status_code == 200:

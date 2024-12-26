@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 from app.config import settings
 from app.database import Base, engine
+from app.deps import get_settings  # Import deps before api modules
+from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -15,10 +16,10 @@ app = FastAPI(
 # Disable CORS. Do not remove this for full-stack development.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["https://travel-destination-app-75inxnsu.devinapps.com"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "Origin"]
 )
 
 # Include routers

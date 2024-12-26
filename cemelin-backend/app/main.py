@@ -17,9 +17,6 @@ def init_db():
         logger.error(f"Error creating database tables: {e}")
         raise
 
-# Initialize database on startup
-init_db()
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
@@ -43,6 +40,16 @@ app.include_router(contact.router, prefix=f"{settings.API_V1_STR}/contact", tags
 app.include_router(i18n.router, prefix=f"{settings.API_V1_STR}/i18n", tags=["i18n"])
 app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", tags=["locations"])
 app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["maps"])
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database on application startup."""
+    try:
+        init_db()
+        logger.info("Database initialized successfully on startup")
+    except Exception as e:
+        logger.error(f"Failed to initialize database on startup: {e}")
+        raise
 
 @app.get("/healthz")
 async def healthz():

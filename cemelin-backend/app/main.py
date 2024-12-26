@@ -34,13 +34,32 @@ app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["map
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on application startup."""
+    """Initialize database and create all tables on application startup."""
     try:
-        # Import all models to ensure they're registered with SQLAlchemy
+        # Import all models to ensure they're registered
         from app.models import user, destination, review, trip
+        from app.database import init_db, engine, Base
+        from sqlalchemy import inspect
+        
+        logger.info("Starting database initialization...")
+        logger.info(f"Using database URL: {settings.DATABASE_URL}")
+        
+        # Drop all tables first to ensure clean state (since we're using in-memory DB)
+        logger.info("Dropping existing tables...")
+        Base.metadata.drop_all(bind=engine)
         
         # Initialize database and create tables
+        logger.info("Initializing database...")
         init_db()
+        
+        # Verify tables exist
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        logger.info(f"Created tables: {tables}")
+        
+        if not tables:
+            raise Exception("No tables were created during initialization")
+            
         logger.info("Database initialized successfully on startup")
     except Exception as e:
         logger.error(f"Failed to initialize database on startup: {e}")

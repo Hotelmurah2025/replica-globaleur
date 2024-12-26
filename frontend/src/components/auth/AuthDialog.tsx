@@ -65,21 +65,23 @@ export function AuthDialog({ mode = "signin", trigger }: AuthDialogProps) {
       })()
 
       const data = await response.json()
+      
       if (!response.ok) {
         throw new Error(data.detail || 'Authentication failed')
       }
 
       if (isSignIn) {
         localStorage.setItem('token', data.access_token)
-      }
-      
-      toast({
-        title: isSignIn ? "Welcome back!" : "Account created",
-        description: isSignIn ? "Successfully signed in" : "Please check your email to verify your account",
-      })
-      
-      if (isSignIn) {
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in",
+        })
         window.location.reload()
+      } else {
+        toast({
+          title: "Account created",
+          description: "Please check your email to verify your account",
+        })
       }
 
     } catch (error) {

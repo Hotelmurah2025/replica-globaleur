@@ -20,12 +20,14 @@ def init_db():
     try:
         logger.debug("=== Starting Database Initialization ===")
         logger.debug(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
-        logger.debug(f"SQLAlchemy Base classes: {Base._decl_class_registry.keys()}")
         
-        # Get models from models.__init__.py
+        # Import models first to ensure they're registered with Base
         from .models import all_models
         logger.debug("Models imported successfully...")
         logger.debug(f"Available models: {[m.__name__ for m in all_models]}")
+        
+        # Log registered tables
+        logger.debug(f"Registered tables: {Base.metadata.tables.keys()}")
         
         # Drop all tables first to ensure clean state (since we're using in-memory DB)
         logger.debug("Dropping existing tables...")

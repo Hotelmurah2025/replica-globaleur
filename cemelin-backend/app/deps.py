@@ -1,22 +1,15 @@
-from typing import Generator, Optional
+from typing import Generator, Optional, Annotated, TYPE_CHECKING
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from functools import lru_cache
-from typing import Annotated, TYPE_CHECKING, Generator
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import SessionLocal
 from app.models.user import User
 from app.schemas.user import TokenPayload
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-from app.database import SessionLocal
 
 if TYPE_CHECKING:
     from app.config import Settings

@@ -39,15 +39,24 @@ app.include_router(i18n.router, prefix=f"{settings.API_V1_STR}/i18n", tags=["i18
 app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", tags=["locations"])
 app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["maps"])
 
+# Initialize database before creating FastAPI app
+from app.database import init_db, Base, engine
+logger.info("Initializing database before application startup...")
+init_db()
+
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database and create all tables on application startup."""
+    """Verify database initialization on application startup."""
     try:
-        from app.database import init_db
-        init_db()
-        logger.info("Database initialized successfully on startup")
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        logger.info(f"Available tables at startup: {tables}")
+        if not tables:
+            raise Exception("No tables found in database at startup")
+        logger.info("Database verification completed successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize database on startup: {e}")
+        logger.error(f"Database verification failed on startup: {e}")
         raise
 
 @app.get("/healthz")

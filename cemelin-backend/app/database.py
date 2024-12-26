@@ -24,12 +24,13 @@ def init_db():
         logger.info("Starting database initialization...")
         logger.info(f"Using database URL: {SQLALCHEMY_DATABASE_URL}")
         
+        # Import all models to ensure they're registered
+        from app.models import user, destination, review, trip
+        logger.info("Models imported successfully")
+        
         # Drop all tables first to ensure clean state (since we're using in-memory DB)
         logger.info("Dropping existing tables...")
         Base.metadata.drop_all(bind=engine)
-        
-        # Import all models to ensure they're registered
-        from app.models import user, destination, review, trip
         
         # Create all tables
         logger.info("Creating tables...")
@@ -43,7 +44,13 @@ def init_db():
         if not tables:
             raise Exception("No tables were created during initialization")
             
-        logger.info("Database tables created successfully")
+        # Double-check specific tables
+        required_tables = ['users', 'destinations', 'reviews', 'trips']
+        missing_tables = [table for table in required_tables if table not in tables]
+        if missing_tables:
+            raise Exception(f"Missing required tables: {missing_tables}")
+            
+        logger.info("Database tables created and verified successfully")
         return True
     except Exception as e:
         logger.error(f"Error creating database tables: {e}")

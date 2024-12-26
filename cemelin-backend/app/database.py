@@ -4,7 +4,10 @@ from sqlalchemy.orm import sessionmaker
 import logging
 
 from .config import settings
-from .models import user, destination, review, trip  # Import all models
+from .models.user import User
+from .models.destination import Destination
+from .models.review import Review
+from .models.trip import Trip
 
 logger = logging.getLogger(__name__)
 

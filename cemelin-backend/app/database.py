@@ -18,12 +18,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Initialize database and create all tables."""
     try:
-        logger.info("Starting database initialization process...")
-        logger.info(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
+        logger.info("Starting database initialization...")
         
         # Import Base and models
         from .models.base import Base
         from .models import all_models  # This imports all required models
+        
+        # Ensure models are imported
+        logger.info("Models imported successfully")
         
         # Create all tables
         Base.metadata.create_all(bind=engine)

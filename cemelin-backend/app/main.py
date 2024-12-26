@@ -23,12 +23,13 @@ for logger_name in logging.root.manager.loggerDict:
 # Configure app logger
 logger = logging.getLogger(__name__)
 
-# Initialize database before importing models
-logger.info("Initializing database before application startup...")
-init_db()
-
-# Import Base and models after database initialization
+# Import Base and models first
 from app.models.base import Base
+from app.models import all_models
+
+# Initialize database
+logger.info("Initializing database...")
+init_db()
 from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 
 app = FastAPI(

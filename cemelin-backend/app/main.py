@@ -1,11 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.database import init_db
+from app.database import init_db, Base, engine
 from app.deps import get_settings  # Import deps before api modules
 from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 import logging
+import sys
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(

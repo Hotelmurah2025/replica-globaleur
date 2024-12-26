@@ -18,7 +18,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Initialize database and create all tables."""
     try:
-        logger.info("Starting database initialization...")
+        logger.info("Starting database initialization process...")
         
         # Import Base and models to ensure proper registration
         from .models.base import Base

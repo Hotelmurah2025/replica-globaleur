@@ -27,9 +27,6 @@ def init_db():
         logger.debug("Models imported successfully...")
         logger.debug(f"Available models: {[m.__name__ for m in all_models]}")
         
-        # Log registered tables
-        logger.debug(f"Registered tables: {Base.metadata.tables.keys()}")
-        
         # Drop all tables first to ensure clean state (since we're using in-memory DB)
         logger.debug("Dropping existing tables...")
         Base.metadata.drop_all(bind=engine)

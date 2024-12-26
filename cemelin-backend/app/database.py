@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import logging
 
 from .config import settings
-from .models.base import Base, metadata
+from .models.base import metadata
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +20,12 @@ def init_db():
     try:
         logger.info("Starting database initialization...")
         
-        # Import all models to ensure they are registered with SQLAlchemy
+        # Import Base and models to ensure proper registration
+        from .models.base import Base
         from .models import user, destination, review, trip
         
         # Create all tables
-        Base.metadata.create_all(bind=engine)
+        metadata.create_all(bind=engine)
         
         # Verify tables exist
         inspector = inspect(engine)

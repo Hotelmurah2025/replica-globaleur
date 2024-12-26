@@ -18,9 +18,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Import all models here to ensure they're registered with SQLAlchemy
-from .models import user, destination, review, trip
-
 def init_db():
     """Initialize database and create all tables."""
     try:
@@ -40,9 +37,6 @@ def init_db():
     except Exception as e:
         logger.error(f"Error creating database tables: {e}")
         raise
-
-# Initialize database tables immediately
-init_db()
 
 # Dependency
 def get_db():

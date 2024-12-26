@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import logging
@@ -18,18 +18,31 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+# Import all models here to ensure they're registered with SQLAlchemy
+from .models import user, destination, review, trip
+
 def init_db():
     """Initialize database and create all tables."""
     try:
-        # Import all models to ensure they're registered with SQLAlchemy
-        from .models import user, destination, review, trip
+        logger.info("Starting database initialization...")
+        logger.info(f"Using database URL: {SQLALCHEMY_DATABASE_URL}")
         
         # Create all tables
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables created successfully")
+        
+        # Verify tables exist
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        logger.info(f"Created tables: {tables}")
+        
+        return True
     except Exception as e:
         logger.error(f"Error creating database tables: {e}")
         raise
+
+# Initialize database tables immediately
+init_db()
 
 # Dependency
 def get_db():

@@ -18,11 +18,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Initialize database and create all tables."""
     try:
-        # Import models package first to ensure all models are registered
-        from . import models
+        logger.info("Starting database initialization...")
         
-        # Drop all tables first to ensure clean state (since we're using in-memory DB)
-        Base.metadata.drop_all(bind=engine)
+        # Import all models to ensure they are registered with SQLAlchemy
+        from .models import user, destination, review, trip
+        
         # Create all tables
         Base.metadata.create_all(bind=engine)
         
@@ -35,14 +35,13 @@ def init_db():
         missing_tables = [table for table in required_tables if table not in tables]
         
         if missing_tables:
-            raise Exception(f"Missing required tables: {missing_tables}")
+            logger.error(f"Missing required tables: {missing_tables}")
+            raise Exception(f"Database initialization failed: missing tables {missing_tables}")
             
-        logger.info(f"Successfully created tables: {tables}")
+        logger.info(f"Database initialized successfully with tables: {tables}")
         return True
     except Exception as e:
-        logger.error("=== Database Initialization Failed ===")
-        logger.error(f"Error details: {str(e)}")
-        logger.exception("Full traceback:")
+        logger.error(f"Database initialization failed: {str(e)}")
         raise
 
 # Dependency

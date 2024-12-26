@@ -4,9 +4,21 @@ from app.config import settings
 from app.database import Base, engine
 from app.deps import get_settings  # Import deps before api modules
 from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+def init_db():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {e}")
+        raise
+
+# Initialize database on startup
+init_db()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

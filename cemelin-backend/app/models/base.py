@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, DateTime
 from sqlalchemy.sql import func
-from app.database import Base
+from sqlalchemy.ext.declarative import declarative_base
+
+# Create Base instance here to avoid circular imports
+Base = declarative_base()
 
 class BaseModel(Base):
     __abstract__ = True

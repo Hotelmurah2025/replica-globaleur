@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine, inspect
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import logging
 
 from .config import settings
+from .models.base import Base
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,6 @@ engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
 
 def init_db():
     """Initialize database and create all tables."""

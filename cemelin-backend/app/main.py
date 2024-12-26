@@ -1,21 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.database import Base, engine
+from app.database import init_db
 from app.deps import get_settings  # Import deps before api modules
 from app.api import auth, destinations, reviews, trips, contact, i18n, locations, maps
 import logging
 
 logger = logging.getLogger(__name__)
-
-# Create database tables
-def init_db():
-    try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database tables created successfully")
-    except Exception as e:
-        logger.error(f"Error creating database tables: {e}")
-        raise
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

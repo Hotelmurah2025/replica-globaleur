@@ -18,8 +18,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Initialize database and create all tables."""
     try:
-        # Import all models to ensure they're registered with SQLAlchemy
-        from .models import User, Destination, Review, Trip
+        # Import models package first to ensure all models are registered
+        from . import models
+        logger.debug("Models imported successfully")
         
         # Drop all tables first to ensure clean state (since we're using in-memory DB)
         Base.metadata.drop_all(bind=engine)

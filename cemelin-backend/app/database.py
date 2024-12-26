@@ -25,7 +25,7 @@ def init_db():
         from .models import user, destination, review, trip
         
         # Create all tables
-        metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
         
         # Verify tables exist
         inspector = inspect(engine)

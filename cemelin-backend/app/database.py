@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import logging
 
 from .config import settings
-from .models.base import Base
+from .models.base import Base, metadata
 
 logger = logging.getLogger(__name__)
 

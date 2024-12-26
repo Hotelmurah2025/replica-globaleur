@@ -3,7 +3,8 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.database import init_db, Base, engine
+from app.database import init_db, engine
+from app.models.base import Base
 from app.deps import get_settings  # Import deps before api modules
 
 # Configure logging

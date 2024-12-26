@@ -4,10 +4,6 @@ from sqlalchemy.orm import sessionmaker
 import logging
 
 from .config import settings
-from .models.user import User
-from .models.destination import Destination
-from .models.review import Review
-from .models.trip import Trip
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +24,9 @@ def init_db():
         logger.debug(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
         logger.debug(f"SQLAlchemy Base classes: {Base._decl_class_registry.keys()}")
         
-        # Models are already imported at module level
-        logger.debug("Models already imported...")
+        # Import models here to avoid circular imports
+        from .models import User, Destination, Review, Trip
+        logger.debug("Models imported successfully...")
         models = [User, Destination, Review, Trip]
         logger.debug(f"Available models: {[m.__name__ for m in models]}")
         

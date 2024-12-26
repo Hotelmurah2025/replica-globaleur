@@ -36,6 +36,10 @@ app.include_router(maps.router, prefix=f"{settings.API_V1_STR}/maps", tags=["map
 async def startup_event():
     """Initialize database on application startup."""
     try:
+        # Import all models to ensure they're registered with SQLAlchemy
+        from app.models import user, destination, review, trip
+        
+        # Initialize database and create tables
         init_db()
         logger.info("Database initialized successfully on startup")
     except Exception as e:
